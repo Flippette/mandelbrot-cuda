@@ -1,0 +1,16 @@
+[package]
+name = "mandelbrot_cuda"
+version = "0.1.0"
+edition = "2021"
+authors = ["Flippette <quangdatle2006@outlook.com>"]
+license = "GPL-3.0-only"
+
+[dependencies]
+image = { version = "0.24", default-features = false, features = ["png"] }
+rustacuda = "0.1"
+rustacuda_core = "0.1"
+
+[profile.release]
+lto = "thin"
+panic = "abort"
+strip = "symbols"
