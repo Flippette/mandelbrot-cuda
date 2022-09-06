@@ -33,7 +33,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     let timer = Instant::now();
     for (idx, line) in px_lines.iter_mut().enumerate() {
         unsafe {
-            // errors out here
             launch!(module.render_line<<<16, IMAGE_WIDTH / 16, 0, stream>>>(line.as_device_ptr(), X_OFFSET, idx as i32 / 2 + Y_OFFSET, SCALE))?;
         }
     }
