@@ -5,11 +5,11 @@ extern crate rustacuda_core;
 use rustacuda::{memory::DeviceBuffer, prelude::*};
 use std::{error::Error, ffi, time::Instant};
 
-const IMAGE_WIDTH: u32 = 8000;
-const IMAGE_HEIGHT: u32 = 6000;
+const IMAGE_WIDTH: u32 = 80000;
+const IMAGE_HEIGHT: u32 = 60000;
 const X_OFFSET: i32 = (-(IMAGE_WIDTH as f32) / 3.0) as i32;
 const Y_OFFSET: i32 = -(IMAGE_HEIGHT as i32) / 4;
-const SCALE: f32 = 0.001;
+const SCALE: f32 = 0.0001;
 
 fn main() -> Result<(), Box<dyn Error>> {
     rustacuda::init(CudaFlags::empty())?;
@@ -31,9 +31,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("[info] Successfully allocated device memory.");
 
     let timer = Instant::now();
+    let grid_size = (1..IMAGE_WIDTH / 2).rev().find(|n| IMAGE_WIDTH % n == 0).unwrap();
     for (idx, line) in px_lines.iter_mut().enumerate() {
         unsafe {
-            launch!(module.render_line<<<16, IMAGE_WIDTH / 16, 0, stream>>>(line.as_device_ptr(), X_OFFSET, idx as i32 / 2 + Y_OFFSET, SCALE))?;
+            launch!(module.render_line<<<grid_size, IMAGE_WIDTH / grid_size, 0, stream>>>(line.as_device_ptr(), X_OFFSET, idx as i32 / 2 + Y_OFFSET, SCALE))?;
         }
     }
 
